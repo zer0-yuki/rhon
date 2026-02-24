@@ -1,0 +1,27 @@
+{
+  "name": "typesig",
+  "version": "0.1.0",
+  "description": "",
+  "license": "ISC",
+  "author": "Yuki",
+  "type": "module",
+  "main": "dist/index.js",
+  "scripts": {
+    "dev": "tsx watch src/index.ts",
+    "build": "tsc",
+    "build:run": "tsc && node dist/index.js",
+    "start": "node dist/index.js",
+    "lint": "eslint .",
+    "format": "prettier --write .",
+    "format:check": "prettier --check ."
+  },
+  "devDependencies": {
+    "@eslint/js": "^10.0.1",
+    "@types/node": "^25.3.0",
+    "eslint": "^10.0.1",
+    "prettier": "3.8.1",
+    "tsx": "^4.21.0",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.56.0"
+  }
+}
