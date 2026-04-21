@@ -1,3 +1,5 @@
+// token types ----------------
+
 export interface NumberToken {
   readonly kind: 'number'
   readonly lexeme: string
@@ -50,12 +52,15 @@ export interface EOFToken {
 /** Definition of tokens */
 export type Token = LitToken | IdentToken | SymbolToken | ErrorToken | EOFToken
 
+// useful types ----------------
+
 /** Kinds of token */
 export type TokenKind = Token['kind']
 
 /** Narrow the token type by kind */
 export type TokenOf<K extends TokenKind> = Extract<Token, { kind: K }>
 
+// constructors and utils ----------------
 export const Token = {
   number: (lexeme: string): NumberToken => {
     return { kind: 'number', lexeme, literal: Number(lexeme) }
