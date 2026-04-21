@@ -1,4 +1,3 @@
-import { Instruction } from './backend/instruction.js'
 import { compile } from './backend/compiler.js'
 import { Lexer } from './frontend/lexer/index.js'
 import { Parser } from './frontend/parser/index.js'
