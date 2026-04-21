@@ -50,6 +50,7 @@ function* getRawTokens(src: string): TokenGenerator {
     return Token.string(makeLexeme())
   }
 
+  // Lexing logic here
   while (currentPos < src.length) {
     skipWhitespace()
     startPos = currentPos
