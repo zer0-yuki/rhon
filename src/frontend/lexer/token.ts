@@ -37,20 +37,13 @@ export type SymbolToken = {
   }
 }[SymbolKind]
 
-/** To report something wrong in lexing you can use this */
-export interface ErrorToken {
-  readonly kind: 'error'
-  readonly lexeme: string
-  readonly message: string
-}
-
 export interface EOFToken {
   readonly kind: 'eof'
   readonly lexeme: ''
 }
 
 /** Definition of tokens */
-export type Token = LitToken | IdentToken | SymbolToken | ErrorToken | EOFToken
+export type Token = LitToken | IdentToken | SymbolToken | EOFToken
 
 // useful types ----------------
 
@@ -77,13 +70,9 @@ export const Token = {
       lexeme: symbolMap[kind],
     } as TokenOf<K>
   },
-  error: (lexeme: string, message: string): ErrorToken => {
-    return { kind: 'error', lexeme, message }
-  },
   eof: (): EOFToken => {
     return { kind: 'eof', lexeme: '' }
   },
   isKind: <K extends TokenKind>(token: Token, kind: K): token is TokenOf<K> => token.kind === kind,
-  isError: (token: Token) => Token.isKind(token, 'error'),
   isEof: (token: Token) => Token.isKind(token, 'eof'),
 } as const

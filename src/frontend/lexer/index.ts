@@ -1,3 +1,4 @@
+import { LexError } from './error.js'
 import { Token } from './token.js'
 
 // utils
@@ -17,7 +18,7 @@ export type TokenGenerator = Generator<Token, Token>
  * Get a token generator from source.
  * The lexing logic is right here.
  */
-function* getRawTokens(src: string): TokenGenerator {
+function* getRawTokens(src: string, report: (error: LexError) => void): TokenGenerator {
   let currentPos = 0
   let startPos = 0
   let line = 1
@@ -49,7 +50,7 @@ function* getRawTokens(src: string): TokenGenerator {
   const makeString = (): Token => {
     while (!isQuote(peek())) {
       if (isEOF(advance())) {
-        return Token.error(makeLexeme(), 'Unclosed string literal')
+        report({ kind: 'unclosed string literal', lexeme: makeLexeme() })
       }
     }
     advance()
@@ -100,7 +101,7 @@ function* getRawTokens(src: string): TokenGenerator {
         } else if (isQuote(char)) {
           yield makeString()
         } else {
-          yield Token.error(char, `Unkown character "${char}"`)
+          report({ kind: 'unknown char', char })
         }
 
         break
@@ -114,12 +115,17 @@ export class Lexer {
   private generator: TokenGenerator
   private curTok: Token | undefined
   private nextTok: Token | undefined
+  private _errors: LexError[] = []
 
   /** Make token stream from source. At first {@link cur} is pointing to the first token. */
   constructor(src: string) {
-    this.generator = getRawTokens(src)
+    this.generator = getRawTokens(src, (error) => this._errors.push(error))
     this.curTok = this.next()
     this.nextTok = this.next()
+  }
+
+  get errors() {
+    return this._errors
   }
 
   private next() {

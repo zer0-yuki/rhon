@@ -123,6 +123,5 @@ export const rules: {
   },
 
   equal: {},
-  error: {},
   eof: {},
 }

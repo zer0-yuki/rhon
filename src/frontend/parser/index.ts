@@ -52,9 +52,7 @@ export class Parser {
       // In any time a token without nud can't be an expression
       const error: ParseError = Token.isKind(cur, 'rparen')
         ? { kind: 'unclosed rparen' }
-        : Token.isError(cur)
-          ? { kind: 'lex error', message: cur.message }
-          : { kind: 'not an expression', found: cur.kind }
+        : { kind: 'not an expression', found: cur.kind }
       this.report(error)
       left = Expr.error()
     } else {
@@ -63,15 +61,6 @@ export class Parser {
 
     while (true) {
       const op = this.lexer.cur
-      if (Token.isError(op)) {
-        this.report({ kind: 'lex error', message: op.message })
-        // Cosume error token and skip to parse next.
-        // - Why this.advance() is not needed
-        //   in error token check outside loop?
-        // - In the loop we directly use continue.
-        this.advance()
-        continue
-      }
 
       const binding = getRule(op.kind).binding
       if (!binding || minBp >= binding.bp) {
