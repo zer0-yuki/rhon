@@ -37,21 +37,21 @@ export type LedFn<K = string> = K extends TokenKind
   : // general type when K is not provided
     (ctx: { p: Parser; token: Token; left: Expr }) => Expr
 
-export const makeNud = (kind: PrefixKind): NudFn => {
+const makeNud = (kind: PrefixKind): NudFn => {
   return ({ p }) => {
     p.advance()
     return Expr.prefix(kind, p.parseBp(Precedence.PREFIX))
   }
 }
 
-export const makeLed = (kind: InfixKind, precedence: Precedence): LedFn => {
+const makeLed = (kind: InfixKind, precedence: Precedence): LedFn => {
   return ({ p, left }) => {
     p.advance()
     return Expr.infix(kind, left, p.parseBp(precedence))
   }
 }
 
-export const appLed: LedFn = ({ p, left }) => Expr.app(left, p.parseBp(Precedence.CALL))
+const appLed: LedFn = ({ p, left }) => Expr.app(left, p.parseBp(Precedence.CALL))
 
 export const getRule = (kind: TokenKind) => rules[kind] as ParseRule
 
