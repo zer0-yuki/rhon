@@ -1,6 +1,6 @@
 import { Instruction } from './backend/instruction.js'
 import { compile } from './backend/compiler.js'
-import { rawTokens, TokenStream } from './frontend/lexer.js'
+import { TokenStream } from './frontend/lexer.js'
 import { Parser } from './frontend/parser.js'
 import { Executor } from './backend/executor.js'
 

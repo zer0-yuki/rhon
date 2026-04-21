@@ -9,7 +9,11 @@ const isLinebreak = (s: string) => s === '\n'
 
 export type TokenGenerator = Generator<Token, Token>
 
-export function* rawTokens(src: string): TokenGenerator {
+/**
+ * Get a token generator from source.
+ * The lexing logic is right here.
+ */
+function* getRawTokens(src: string): TokenGenerator {
   let currentPos = 0
   let startPos = 0
   let line = 1
@@ -106,7 +110,7 @@ export class TokenStream {
 
   /** Make token stream from source. At first {@link cur} is pointing to the first token. */
   constructor(src: string) {
-    this.generator = rawTokens(src)
+    this.generator = getRawTokens(src)
     this.curTok = this.genNext()
     this.nextTok = this.genNext()
   }
