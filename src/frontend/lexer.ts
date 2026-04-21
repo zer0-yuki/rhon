@@ -110,7 +110,7 @@ function* getRawTokens(src: string): TokenGenerator {
   return Token.eof()
 }
 
-export class TokenStream {
+export class Lexer {
   private generator: TokenGenerator
   private curTok: Token | undefined
   private nextTok: Token | undefined

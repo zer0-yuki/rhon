@@ -1,6 +1,6 @@
 import { Instruction } from './backend/instruction.js'
 import { compile } from './backend/compiler.js'
-import { TokenStream } from './frontend/lexer.js'
+import { Lexer } from './frontend/lexer.js'
 import { Parser } from './frontend/parser.js'
 import { Executor } from './backend/executor.js'
 
@@ -9,8 +9,8 @@ const src = `
 `
 console.log(src)
 
-const tokenStream = new TokenStream(src)
-const p = new Parser(tokenStream)
+const lexer = new Lexer(src)
+const p = new Parser(lexer)
 const expr = p.parse()
 
 console.dir(expr)

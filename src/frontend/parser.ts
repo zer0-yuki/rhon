@@ -1,5 +1,5 @@
 import { Expr, InfixKind, PrefixKind } from './expr.js'
-import { TokenStream } from './lexer.js'
+import { Lexer } from './lexer.js'
 import { Token, TokenKind, TokenOf } from './token.js'
 
 export const enum Precedence {
@@ -132,11 +132,11 @@ export type ParseError =
   | { kind: 'unclosed rparen' }
 
 export class Parser {
-  private tokenStream: TokenStream
+  private lexer: Lexer
   private errors: ParseError[] = []
 
-  constructor(tokens: TokenStream) {
-    this.tokenStream = tokens
+  constructor(lexer: Lexer) {
+    this.lexer = lexer
   }
 
   get diagnostics() {
@@ -159,7 +159,7 @@ export class Parser {
   }
 
   advance(): Token {
-    return this.tokenStream.advance()
+    return this.lexer.advance()
   }
 
   parseBp(minBp: number): Expr {
@@ -180,7 +180,7 @@ export class Parser {
     }
 
     while (true) {
-      const op = this.tokenStream.cur
+      const op = this.lexer.cur
       if (Token.isError(op)) {
         this.report({ kind: 'lex error', message: op.message })
         // cosume the error token and skip to parse next
