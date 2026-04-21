@@ -37,21 +37,21 @@ export type LedFn<K = string> = K extends TokenKind
   : // general type when K is not provided
     (ctx: { p: Parser; token: Token; left: Expr }) => Expr
 
-export const prefix = (kind: PrefixKind): NudFn => {
+export const makeNud = (kind: PrefixKind): NudFn => {
   return ({ p }) => {
     p.advance()
     return Expr.prefix(kind, p.parseBp(Precedence.PREFIX))
   }
 }
 
-export const infix = (kind: InfixKind, precedence: Precedence): LedFn => {
+export const makeLed = (kind: InfixKind, precedence: Precedence): LedFn => {
   return ({ p, left }) => {
     p.advance()
     return Expr.infix(kind, left, p.parseBp(precedence))
   }
 }
 
-export const app: LedFn = ({ p, left }) => Expr.app(left, p.parseBp(Precedence.CALL))
+export const appLed: LedFn = ({ p, left }) => Expr.app(left, p.parseBp(Precedence.CALL))
 
 export const getRule = (kind: TokenKind) => rules[kind] as ParseRule
 
@@ -62,47 +62,49 @@ export const rules: {
     nud: ({ token }) => Expr.number(token.literal),
     binding: {
       bp: Precedence.CALL,
-      led: app,
+      led: appLed,
     },
   },
   string: {
     nud: ({ token }) => Expr.string(token.literal),
     binding: {
       bp: Precedence.CALL,
-      led: app,
+      led: appLed,
     },
   },
   var: {
     nud: ({ token }) => Expr.var(token.name),
     binding: {
       bp: Precedence.CALL,
-      led: app,
+      led: appLed,
     },
   },
   plus: {
-    nud: prefix('pos'),
+    nud: makeNud('pos'),
     binding: {
       bp: Precedence.SUM,
-      led: infix('add', Precedence.SUM),
+      led: makeLed('add', Precedence.SUM),
     },
   },
   minus: {
-    nud: prefix('neg'),
+    nud: makeNud('neg'),
     binding: {
       bp: Precedence.SUM,
-      led: infix('sub', Precedence.SUM),
+      led: makeLed('sub', Precedence.SUM),
     },
   },
   star: {
+    // not a prefix
     binding: {
       bp: Precedence.PRODUCT,
-      led: infix('mul', Precedence.PRODUCT),
+      led: makeLed('mul', Precedence.PRODUCT),
     },
   },
   slash: {
+    // not a prefix
     binding: {
       bp: Precedence.PRODUCT,
-      led: infix('div', Precedence.PRODUCT),
+      led: makeLed('div', Precedence.PRODUCT),
     },
   },
   lparen: {
@@ -113,10 +115,12 @@ export const rules: {
     },
     binding: {
       bp: Precedence.CALL,
-      led: app,
+      led: appLed,
     },
   },
-  rparen: {},
+  rparen: {
+    // It's a terminator
+  },
 
   equal: {},
   error: {},
