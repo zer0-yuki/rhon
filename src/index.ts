@@ -1,7 +1,7 @@
 import { Instruction } from './backend/instruction.js'
 import { compile } from './backend/compiler.js'
 import { Lexer } from './frontend/lexer.js'
-import { Parser } from './frontend/parser.js'
+import { Parser } from './frontend/parser/index.js'
 import { Executor } from './backend/executor.js'
 
 const src = `
