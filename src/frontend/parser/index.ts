@@ -7,14 +7,14 @@ import { getRule } from './rules.js'
 
 export class Parser {
   private lexer: Lexer
-  private errors: ParseError[] = []
+  private _errors: ParseError[] = []
 
   constructor(lexer: Lexer) {
     this.lexer = lexer
   }
 
-  get diagnostics() {
-    return this.errors
+  get errors() {
+    return this._errors
   }
 
   parse(): Expr {
@@ -22,7 +22,7 @@ export class Parser {
   }
 
   report(error: ParseError): void {
-    this.errors.push(error)
+    this._errors.push(error)
   }
 
   /**

@@ -14,7 +14,7 @@ const p = new Parser(lexer)
 const expr = p.parse()
 
 console.dir(expr)
-console.log('Errors:', p.diagnostics)
+console.log('Errors:', p.errors)
 
 const insts = compile(expr)
 console.log('Instructions:')
