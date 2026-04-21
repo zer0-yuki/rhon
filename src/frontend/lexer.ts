@@ -1,5 +1,6 @@
 import { Token } from './token.js'
 
+// utils
 const isDigit = (s: string) => /\d/.test(s)
 const isIdentAlpha = (s: string) => /[_a-zA-Z]/.test(s)
 const isQuote = (s: string) => s === '"'
@@ -7,6 +8,9 @@ const isWhitespace = (s: string) => /\s/.test(s)
 const isEOF = (s: string) => s === ''
 const isLinebreak = (s: string) => s === '\n'
 
+/**
+ * It will return an token (actually eof) when it ends.
+ */
 export type TokenGenerator = Generator<Token, Token>
 
 /**
@@ -18,6 +22,7 @@ function* getRawTokens(src: string): TokenGenerator {
   let startPos = 0
   let line = 1
 
+  // utils that capture local vars above
   const advance = () => src.at(currentPos++) ?? ''
   const peek = () => src.at(currentPos) ?? ''
   const skipWhitespace = () => {
@@ -27,6 +32,7 @@ function* getRawTokens(src: string): TokenGenerator {
       }
     }
   }
+  // constructors with states
   const makeLexeme = (): string => src.slice(startPos, currentPos)
   const makeNumber = (): Token => {
     while (isDigit(peek())) {
@@ -50,7 +56,7 @@ function* getRawTokens(src: string): TokenGenerator {
     return Token.string(makeLexeme())
   }
 
-  // Lexing logic here
+  // lexing logic
   while (currentPos < src.length) {
     skipWhitespace()
     startPos = currentPos
