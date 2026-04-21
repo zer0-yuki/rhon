@@ -1,4 +1,4 @@
-import { TokenKind } from '../token.js'
+import { TokenKind } from '../lexer/token.js'
 
 export type ParseError =
   | { kind: 'expect token'; expect: TokenKind; found: TokenKind }

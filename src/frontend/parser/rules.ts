@@ -1,5 +1,5 @@
-import { Expr, InfixKind, PrefixKind } from '../expr.js'
-import { Token, TokenKind, TokenOf } from '../token.js'
+import { Expr, InfixKind, PrefixKind } from './expr.js'
+import { Token, TokenKind, TokenOf } from '../lexer/token.js'
 import { Parser } from './index.js'
 import { Precedence } from './precedence.js'
 

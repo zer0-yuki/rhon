@@ -1,4 +1,4 @@
-import { Expr, InfixKind, PrefixKind } from '../frontend/expr.js'
+import { Expr, InfixKind, PrefixKind } from '../frontend/parser/expr.js'
 import { Instruction } from './instruction.js'
 
 const infixCodes = (op: InfixKind, left: Expr, right: Expr): Instruction[] => [
