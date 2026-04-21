@@ -118,21 +118,16 @@ export class Lexer {
   /** Make token stream from source. At first {@link cur} is pointing to the first token. */
   constructor(src: string) {
     this.generator = getRawTokens(src)
-    this.curTok = this.genNext()
-    this.nextTok = this.genNext()
+    this.curTok = this.next()
+    this.nextTok = this.next()
   }
 
-  private genNext() {
+  private next() {
     return this.generator.next().value
   }
 
   get cur(): Token {
     return this.curTok ?? Token.eof()
-  }
-
-  /** @deprecated */
-  get next(): Token {
-    return this.nextTok ?? Token.eof()
   }
 
   /** Move to next token and return {@link cur} before moving */
