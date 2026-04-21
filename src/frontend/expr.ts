@@ -1,3 +1,4 @@
+// expr types ----------------
 export interface NumberExpr {
   readonly kind: 'number'
   readonly literal: number
@@ -45,6 +46,7 @@ export type OpExpr = PrefixExpr | InfixExpr
 
 export type Expr = LitExpr | VarExpr | OpExpr | AppExpr | UnknownExpr | ErrorExpr
 
+// constructors
 export const Expr = {
   number: (literal: number): NumberExpr => {
     return { kind: 'number', literal }
