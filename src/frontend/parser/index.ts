@@ -31,7 +31,7 @@ export class Parser {
   consume(expect: TokenKind, error?: ParseError): void {
     const cur = this.advance()
     if (cur.kind !== expect) {
-      this.report(error ?? { kind: 'expect token', expect, found: cur.kind })
+      this.report(error ?? { kind: 'unexpected token', expect, found: cur.kind })
     }
   }
 
