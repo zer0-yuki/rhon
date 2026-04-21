@@ -21,27 +21,35 @@ export class Parser {
     return this.parseBp(Precedence.LOWEST)
   }
 
-  consume(expect: TokenKind, error?: ParseError) {
+  report(error: ParseError): void {
+    this.errors.push(error)
+  }
+
+  /**
+   * Consume expected token kind or produce an error.
+   */
+  consume(expect: TokenKind, error?: ParseError): void {
     const cur = this.advance()
     if (cur.kind !== expect) {
       this.report(error ?? { kind: 'expect token', expect, found: cur.kind })
     }
   }
 
-  report(error: ParseError): void {
-    this.errors.push(error)
-  }
-
   advance(): Token {
     return this.lexer.advance()
   }
 
+  /**
+   * Parse with binding power.
+   * It's the core of **Pratt parser**.
+   */
   parseBp(minBp: number): Expr {
     const cur = this.advance()
     const nud = getRule(cur.kind).nud
 
     let left: Expr
     if (!nud) {
+      // In any time a token without nud can't be an expression
       const error: ParseError = Token.isKind(cur, 'rparen')
         ? { kind: 'unclosed rparen' }
         : Token.isError(cur)
@@ -57,13 +65,27 @@ export class Parser {
       const op = this.lexer.cur
       if (Token.isError(op)) {
         this.report({ kind: 'lex error', message: op.message })
-        // cosume the error token and skip to parse next
+        // Cosume error token and skip to parse next.
+        // - Why this.advance() is not needed
+        //   in error token check outside loop?
+        // - In the loop we directly use continue.
         this.advance()
         continue
       }
 
       const binding = getRule(op.kind).binding
       if (!binding || minBp >= binding.bp) {
+        // That means this expression can't accept this kind of op.
+        //
+        // e.g.   2 * 3 + 1
+        // minBp ---^   ^--- binding.bp
+        // grouped as (2 * 3) + 1
+        // binding power: "+" < "*"
+        //
+        // e.g.   2 - 3 + 1
+        // minBp ---^   ^--- binding.bp
+        // binding power: "+" == "-"
+        // grouped as (2 - 3) + 1
         break
       }
 

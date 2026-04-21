@@ -11,15 +11,31 @@ export interface ParseRule<K = string> {
   }
 }
 
-/** Null denominator */
+/**
+ * Null denotation.
+ *
+ * It means what the op express when it **has no left oprand**.
+ *
+ * e.g. `1 + 2`
+ */
 export type NudFn<K = string> = K extends TokenKind
-  ? (ctx: { p: Parser; token: TokenOf<K> }) => Expr
-  : (ctx: { p: Parser; token: Token }) => Expr
+  ? // specific type when K is provided
+    (ctx: { p: Parser; token: TokenOf<K> }) => Expr
+  : // general type when K is not provided
+    (ctx: { p: Parser; token: Token }) => Expr
 
-/** Left denominator */
+/**
+ * Left denotation.
+ *
+ * It means what the op express when it **has left oprand**.
+ *
+ * e.g. `-2`
+ */
 export type LedFn<K = string> = K extends TokenKind
-  ? (ctx: { p: Parser; token: TokenOf<K>; left: Expr }) => Expr
-  : (ctx: { p: Parser; token: Token; left: Expr }) => Expr
+  ? // specific type when K is provided
+    (ctx: { p: Parser; token: TokenOf<K>; left: Expr }) => Expr
+  : // general type when K is not provided
+    (ctx: { p: Parser; token: Token; left: Expr }) => Expr
 
 export const prefix = (kind: PrefixKind): NudFn => {
   return ({ p }) => {
