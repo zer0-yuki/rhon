@@ -110,7 +110,7 @@ export const rules: {
   lparen: {
     nud: ({ p }) => {
       const expr = p.parseBp(Precedence.LOWEST)
-      p.consume('rparen', { kind: 'unclosed rparen' })
+      p.consume('rparen', { kind: 'unclosed lparen' })
       return expr
     },
     binding: {
