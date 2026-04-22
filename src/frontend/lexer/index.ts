@@ -140,7 +140,7 @@ export class Lexer {
   advance(): Token {
     const res = this.cur
     this.curTok = this.nextTok
-    this.nextTok = this.generator.next().value
+    this.nextTok = this.next()
     return res
   }
 }
