@@ -113,8 +113,8 @@ function* getRawTokens(src: string, report: (error: LexError) => void): TokenGen
 
 export class Lexer {
   private generator: TokenGenerator
-  private curTok: Token | undefined
-  private nextTok: Token | undefined
+  private curTok: Token
+  private nextTok: Token
   private _errors: LexError[] = []
 
   /** Make token stream from source. At first {@link cur} is pointing to the first token. */
@@ -128,12 +128,13 @@ export class Lexer {
     return this._errors
   }
 
-  private next() {
-    return this.generator.next().value
+  private next(): Token {
+    // this.generator.next().value can be undefined when it reaches the end
+    return (this.generator.next().value as Token | undefined) ?? Token.eof()
   }
 
   get cur(): Token {
-    return this.curTok ?? Token.eof()
+    return this.curTok
   }
 
   /** Move to next token and return {@link cur} before moving */
