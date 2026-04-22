@@ -73,7 +73,7 @@ export const rules: {
       led: appLed,
     },
   },
-  var: {
+  ident: {
     nud: ({ token }) => Expr.var(token.name),
     binding: {
       bp: Precedence.CALL,

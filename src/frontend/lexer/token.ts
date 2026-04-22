@@ -14,7 +14,7 @@ export interface StringToken {
 export type LitToken = NumberToken | StringToken
 
 export interface IdentToken {
-  readonly kind: 'var'
+  readonly kind: 'ident'
   readonly lexeme: string
   readonly name: string
 }
@@ -62,7 +62,7 @@ export const Token = {
     return { kind: 'string', lexeme, literal: lexeme.slice(1, -1) }
   },
   ident: (lexeme: string): IdentToken => {
-    return { kind: 'var', lexeme, name: lexeme }
+    return { kind: 'ident', lexeme, name: lexeme }
   },
   symbol: <K extends SymbolKind>(kind: K): TokenOf<K> => {
     return {
