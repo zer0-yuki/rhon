@@ -7,6 +7,37 @@ export type ParseDiagnostic =
   | UnclosedRparenDiagnostic
   | NotAbindingDiagnostic
 
+export const ParseDiagnostic = {
+  unexpectedToken(expect: TokenKind, found: TokenKind): UnexpectedTokenDiagnostic {
+    return {
+      kind: 'unexpected token',
+      expect,
+      found,
+    }
+  },
+  notAnExpression(found: TokenKind): NotAnExpressionDiagnostic {
+    return {
+      kind: 'not an expression',
+      found,
+    }
+  },
+  unclosedLparen(): UnclosedLparenDiagnostic {
+    return {
+      kind: 'unclosed lparen',
+    }
+  },
+  unclosedRparen(): UnclosedRparenDiagnostic {
+    return {
+      kind: 'unclosed rparen',
+    }
+  },
+  notABinding(): NotAbindingDiagnostic {
+    return {
+      kind: 'not a binding',
+    }
+  },
+}
+
 export interface BaseParseDiagnostic {}
 
 export interface UnexpectedTokenDiagnostic extends BaseParseDiagnostic {

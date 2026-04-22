@@ -31,7 +31,7 @@ export class Parser {
   consume(expect: TokenKind, diag?: ParseDiagnostic): void {
     const cur = this.advance()
     if (cur.kind !== expect) {
-      this.report(diag ?? { kind: 'unexpected token', expect, found: cur.kind })
+      this.report(diag ?? ParseDiagnostic.unexpectedToken(expect, cur.kind))
     }
   }
 
@@ -51,8 +51,8 @@ export class Parser {
     if (!nud) {
       // In any time a token without nud can't be an expression
       const error: ParseDiagnostic = Token.isKind(cur, 'rparen')
-        ? { kind: 'unclosed rparen' }
-        : { kind: 'not an expression', found: cur.kind }
+        ? ParseDiagnostic.unclosedRparen()
+        : ParseDiagnostic.notAnExpression(cur.kind)
       this.report(error)
       left = Expr.error()
     } else {

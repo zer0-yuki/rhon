@@ -50,7 +50,7 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
   const makeString = (): Token => {
     while (!isQuote(peek())) {
       if (isEOF(advance())) {
-        report({ kind: 'unclosed string literal', lexeme: makeLexeme() })
+        report(LexDiagnostic.unclosedString(makeLexeme()))
       }
     }
     advance()
@@ -101,7 +101,7 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
         } else if (isQuote(char)) {
           yield makeString()
         } else {
-          report({ kind: 'unknown char', char })
+          report(LexDiagnostic.unknownChar(char))
         }
 
         break
