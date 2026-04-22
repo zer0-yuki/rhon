@@ -17,8 +17,8 @@ export class Parser {
     return this._errors
   }
 
-  parse(): Expr {
-    return this.parseBp(Precedence.LOWEST)
+  parseExpr(): Expr {
+    return this.parseExprBp(Precedence.LOWEST)
   }
 
   report(error: ParseError): void {
@@ -43,7 +43,7 @@ export class Parser {
    * Parse with binding power.
    * It's the core of **Pratt parser**.
    */
-  parseBp(minBp: number): Expr {
+  parseExprBp(minBp: number): Expr {
     const cur = this.advance()
     const nud = getRule(cur.kind).nud
 

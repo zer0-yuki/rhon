@@ -11,7 +11,7 @@ console.log(src)
 
 const l = new Lexer(src)
 const p = new Parser(l)
-const expr = p.parse()
+const expr = p.parseExpr()
 
 console.log('Lexing Errors:', l.errors)
 console.log('Parsing Errors:', p.errors)
