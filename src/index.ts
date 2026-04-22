@@ -13,8 +13,8 @@ const l = new Lexer(src)
 const p = new Parser(l)
 const expr = p.parseExpr()
 
-console.log('Lexing Errors:', l.errors)
-console.log('Parsing Errors:', p.errors)
+console.log('Lexing diags:', l.diagnostics)
+console.log('Parsing diags:', p.diagnostics)
 console.dir(expr)
 
 const insts = compile(expr)

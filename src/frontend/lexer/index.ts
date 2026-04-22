@@ -1,4 +1,4 @@
-import { LexError } from './error.js'
+import { LexDiagnostic } from './error.js'
 import { Token } from './token.js'
 
 // utils
@@ -18,7 +18,7 @@ export type TokenGenerator = Generator<Token, Token>
  * Get a token generator from source.
  * The lexing logic is right here.
  */
-function* getRawTokens(src: string, report: (error: LexError) => void): TokenGenerator {
+function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): TokenGenerator {
   let currentPos = 0
   let startPos = 0
   let line = 1
@@ -115,17 +115,17 @@ export class Lexer {
   private generator: TokenGenerator
   private curTok: Token
   private nextTok: Token
-  private _errors: LexError[] = []
+  private _diagnostics: LexDiagnostic[] = []
 
   /** Make token stream from source. At first {@link cur} is pointing to the first token. */
   constructor(src: string) {
-    this.generator = getRawTokens(src, (error) => this._errors.push(error))
+    this.generator = getRawTokens(src, (error) => this._diagnostics.push(error))
     this.curTok = this.next()
     this.nextTok = this.next()
   }
 
-  get errors() {
-    return this._errors
+  get diagnostics() {
+    return this._diagnostics
   }
 
   private next(): Token {

@@ -1,13 +1,13 @@
-export type LexError = UnclosedStringLiteralError | UnknownCharError
+export type LexDiagnostic = UnclosedStringLiteralDiagnostic | UnknownCharDiagnostic
 
-export interface BaseLexError {}
+export interface BaseLexDiagnostic {}
 
-export interface UnclosedStringLiteralError extends BaseLexError {
+export interface UnclosedStringLiteralDiagnostic extends BaseLexDiagnostic {
   kind: 'unclosed string literal'
   lexeme: string
 }
 
-export interface UnknownCharError extends BaseLexError {
+export interface UnknownCharDiagnostic extends BaseLexDiagnostic {
   kind: 'unknown char'
   char: string
 }

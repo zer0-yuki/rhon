@@ -1,37 +1,37 @@
 import { Expr } from './expr.js'
 import { Lexer } from '../lexer/index.js'
 import { Token, TokenKind } from '../lexer/token.js'
-import { ParseError } from './error.js'
+import { ParseDiagnostic } from './error.js'
 import { Precedence } from './precedence.js'
 import { getRule } from './rules.js'
 
 export class Parser {
   private lexer: Lexer
-  private _errors: ParseError[] = []
+  private _diagnostics: ParseDiagnostic[] = []
 
   constructor(lexer: Lexer) {
     this.lexer = lexer
   }
 
-  get errors() {
-    return this._errors
+  get diagnostics() {
+    return this._diagnostics
   }
 
   parseExpr(): Expr {
     return this.parseExprBp(Precedence.LOWEST)
   }
 
-  report(error: ParseError): void {
-    this._errors.push(error)
+  report(diag: ParseDiagnostic): void {
+    this._diagnostics.push(diag)
   }
 
   /**
-   * Consume expected token kind or produce an error.
+   * Consume expected token kind or advance to produce an error.
    */
-  consume(expect: TokenKind, error?: ParseError): void {
+  consume(expect: TokenKind, diag?: ParseDiagnostic): void {
     const cur = this.advance()
     if (cur.kind !== expect) {
-      this.report(error ?? { kind: 'unexpected token', expect, found: cur.kind })
+      this.report(diag ?? { kind: 'unexpected token', expect, found: cur.kind })
     }
   }
 
@@ -50,7 +50,7 @@ export class Parser {
     let left: Expr
     if (!nud) {
       // In any time a token without nud can't be an expression
-      const error: ParseError = Token.isKind(cur, 'rparen')
+      const error: ParseDiagnostic = Token.isKind(cur, 'rparen')
         ? { kind: 'unclosed rparen' }
         : { kind: 'not an expression', found: cur.kind }
       this.report(error)

@@ -1,28 +1,33 @@
 import { TokenKind } from '../lexer/token.js'
 
-export type ParseError =
-  | UnexpectedTokenError
-  | NotAnExpressionError
-  | UnclosedLparenError
-  | UnclosedRparenError
+export type ParseDiagnostic =
+  | UnexpectedTokenDiagnostic
+  | NotAnExpressionDiagnostic
+  | UnclosedLparenDiagnostic
+  | UnclosedRparenDiagnostic
+  | NotAbindingDiagnostic
 
-export interface BaseParseError {}
+export interface BaseParseDiagnostic {}
 
-export interface UnexpectedTokenError extends BaseParseError {
+export interface UnexpectedTokenDiagnostic extends BaseParseDiagnostic {
   kind: 'unexpected token'
   expect: TokenKind
   found: TokenKind
 }
 
-export interface NotAnExpressionError extends BaseParseError {
+export interface NotAnExpressionDiagnostic extends BaseParseDiagnostic {
   kind: 'not an expression'
   found: TokenKind
 }
 
-export interface UnclosedLparenError extends BaseParseError {
+export interface UnclosedLparenDiagnostic extends BaseParseDiagnostic {
   kind: 'unclosed lparen'
 }
 
-export interface UnclosedRparenError extends BaseParseError {
+export interface UnclosedRparenDiagnostic extends BaseParseDiagnostic {
   kind: 'unclosed rparen'
+}
+
+export interface NotAbindingDiagnostic extends BaseParseDiagnostic {
+  kind: 'not a binding'
 }
