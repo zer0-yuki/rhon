@@ -15,13 +15,15 @@ export interface VarExpr {
 
 export type PrefixKind = 'pos' | 'neg'
 
-export type PrefixExpr = { readonly kind: PrefixKind } & {
+export interface PrefixExpr {
+  readonly kind: PrefixKind
   readonly right: Expr
 }
 
 export type InfixKind = 'add' | 'sub' | 'mul' | 'div'
 
-export type InfixExpr = { readonly kind: InfixKind } & {
+export interface InfixExpr {
+  readonly kind: InfixKind
   readonly left: Expr
   readonly right: Expr
 }
