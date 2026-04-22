@@ -27,7 +27,6 @@ export default defineConfig(
       // '@typescript-eslint/no-non-null-assertion': 'warn',
       '@typescript-eslint/no-empty-object-type': 'warn',
 
-
       'prefer-const': 'warn',
       'no-var': 'error',
       curly: ['error', 'all'],
