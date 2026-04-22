@@ -28,11 +28,12 @@ export class Parser {
   /**
    * Consume expected token kind or advance to produce an error.
    */
-  consume(expect: TokenKind, diag?: ParseDiagnostic): void {
+  consume(expect: TokenKind, diag?: ParseDiagnostic): Token {
     const cur = this.advance()
     if (cur.kind !== expect) {
       this.report(diag ?? ParseDiagnostic.unexpectedToken(expect, cur.kind))
     }
+    return cur
   }
 
   advance(): Token {
