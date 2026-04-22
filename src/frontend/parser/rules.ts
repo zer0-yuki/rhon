@@ -2,6 +2,7 @@ import { Expr, InfixKind, PrefixKind } from './expr.js'
 import { Token, TokenKind, TokenOf } from '../lexer/token.js'
 import { Parser } from './index.js'
 import { Precedence } from './precedence.js'
+import { ParseDiagnostic } from './error.js'
 
 export interface ParseRule<K = string> {
   nud?: NudFn<K>
@@ -110,7 +111,7 @@ export const rules: {
   lparen: {
     nud: ({ p }) => {
       const expr = p.parseExprBp(Precedence.LOWEST)
-      p.consume('rparen', { kind: 'unclosed lparen' })
+      p.consume('rparen', ParseDiagnostic.unclosedLparen())
       return expr
     },
     binding: {
