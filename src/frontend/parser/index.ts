@@ -1,6 +1,6 @@
 import { Expr } from './expr.js'
 import { Lexer } from '../lexer/index.js'
-import { Token, TokenKind } from '../lexer/token.js'
+import { Token, TokenKind, TokenOf } from '../lexer/token.js'
 import { ParseDiagnostic } from './error.js'
 import { Precedence } from './precedence.js'
 import { getRule } from './rules.js'
@@ -28,12 +28,13 @@ export class Parser {
   /**
    * Consume expected token kind or advance to produce an error.
    */
-  consume(expect: TokenKind, diag?: ParseDiagnostic): Token {
+  consume<K extends TokenKind>(expect: K, diag?: ParseDiagnostic): TokenOf<K> | undefined {
     const cur = this.advance()
     if (cur.kind !== expect) {
       this.report(diag ?? ParseDiagnostic.unexpectedToken(expect, cur.kind))
+      return undefined
     }
-    return cur
+    return cur as TokenOf<K>
   }
 
   advance(): Token {
