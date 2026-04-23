@@ -27,6 +27,7 @@ const symbolMap = {
   lparen: '(',
   rparen: ')',
   equal: '=',
+  colon: ';',
 } as const
 type SymbolKind = keyof typeof symbolMap
 

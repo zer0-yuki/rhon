@@ -124,5 +124,8 @@ export const rules: {
   },
 
   equal: {},
+  colon: {
+    // It's a terminator
+  },
   eof: {},
 }
