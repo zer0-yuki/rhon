@@ -2,6 +2,6 @@ import { Expr } from './expr.js'
 
 export interface Supercombinator {
   name: string
-  args: string
+  args: string[]
   body: Expr
 }
