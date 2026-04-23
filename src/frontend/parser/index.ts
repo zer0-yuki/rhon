@@ -25,20 +25,51 @@ export class Parser {
     this._diagnostics.push(diag)
   }
 
-  /**
-   * Consume expected token kind or advance to produce an error.
-   */
-  consume<K extends TokenKind>(expect: K, diag?: ParseDiagnostic): TokenOf<K> | undefined {
-    const cur = this.advance()
-    if (cur.kind !== expect) {
-      this.report(diag ?? ParseDiagnostic.unexpectedToken(expect, cur.kind))
-      return undefined
-    }
-    return cur as TokenOf<K>
+  check<K extends TokenKind>(expect: K): TokenOf<K> | undefined {
+    return Token.isKind(this.lexer.cur, expect) ? this.lexer.cur : undefined
   }
 
-  advance(): Token {
+  checkOrHandle<K extends TokenKind>(
+    expect: K,
+    handler: (cur: Token) => void
+  ): TokenOf<K> | undefined {
+    if (Token.isKind(this.lexer.cur, expect)) {
+      return this.lexer.cur
+    } else {
+      handler(this.lexer.cur)
+      return undefined
+    }
+  }
+
+  checkOrReport<K extends TokenKind>(expect: K, diag: ParseDiagnostic): TokenOf<K> | undefined {
+    return this.checkOrHandle(expect, () => this.report(diag))
+  }
+
+  eat(): Token {
     return this.lexer.advance()
+  }
+
+  peek(): Token {
+    return this.lexer.cur
+  }
+
+  consumeOrHandle<K extends TokenKind>(
+    expect: K,
+    handler: (cur: Token) => void
+  ): TokenOf<K> | undefined {
+    if (Token.isKind(this.lexer.cur, expect)) {
+      return this.eat() as TokenOf<K>
+    } else {
+      handler(this.lexer.cur)
+      return undefined
+    }
+  }
+
+  /**
+   * Consume expected token kind produce an error.
+   */
+  consumeOrReport<K extends TokenKind>(expect: K, diag: ParseDiagnostic): TokenOf<K> | undefined {
+    return this.consumeOrHandle(expect, () => this.report(diag))
   }
 
   /**
@@ -46,7 +77,7 @@ export class Parser {
    * It's the core of **Pratt parser**.
    */
   parseExprBp(minBp: number): Expr {
-    const cur = this.advance()
+    const cur = this.eat()
     const nud = getRule(cur.kind).nud
 
     let left: Expr
@@ -62,7 +93,7 @@ export class Parser {
     }
 
     while (true) {
-      const op = this.lexer.cur
+      const op = this.peek()
 
       const binding = getRule(op.kind).binding
       if (!binding || minBp >= binding.bp) {

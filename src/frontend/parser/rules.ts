@@ -40,14 +40,14 @@ export type LedFn<K = string> = K extends TokenKind
 
 const makeNud = (kind: PrefixKind): NudFn => {
   return ({ p }) => {
-    p.advance()
+    p.eat()
     return Expr.prefix(kind, p.parseExprBp(Precedence.PREFIX))
   }
 }
 
 const makeLed = (kind: InfixKind, precedence: Precedence): LedFn => {
   return ({ p, left }) => {
-    p.advance()
+    p.eat()
     return Expr.infix(kind, left, p.parseExprBp(precedence))
   }
 }
@@ -111,7 +111,8 @@ export const rules: {
   lparen: {
     nud: ({ p }) => {
       const expr = p.parseExprBp(Precedence.LOWEST)
-      p.consume('rparen', ParseDiagnostic.unclosedLparen())
+      p.consumeOrReport('rparen', ParseDiagnostic.unclosedLparen())
+      p.eat()
       return expr
     },
     binding: {
