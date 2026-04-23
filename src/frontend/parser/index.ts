@@ -13,17 +13,27 @@ export class Parser {
     this.lexer = lexer
   }
 
+  // diagnostic ----------------
+
   get diagnostics() {
     return this._diagnostics
-  }
-
-  parseExpr(): Expr {
-    return this.parseExprBp(Precedence.LOWEST)
   }
 
   report(diag: ParseDiagnostic): void {
     this._diagnostics.push(diag)
   }
+
+  // raw method ----------------
+
+  eat(): Token {
+    return this.lexer.advance()
+  }
+
+  peek(): Token {
+    return this.lexer.cur
+  }
+
+  // checker ----------------
 
   check<K extends TokenKind>(expect: K): TokenOf<K> | undefined {
     return Token.isKind(this.lexer.cur, expect) ? this.lexer.cur : undefined
@@ -45,13 +55,7 @@ export class Parser {
     return this.checkOrHandle(expect, () => this.report(diag))
   }
 
-  eat(): Token {
-    return this.lexer.advance()
-  }
-
-  peek(): Token {
-    return this.lexer.cur
-  }
+  // consumer ----------------
 
   consumeOrHandle<K extends TokenKind>(
     expect: K,
@@ -70,6 +74,12 @@ export class Parser {
    */
   consumeOrReport<K extends TokenKind>(expect: K, diag: ParseDiagnostic): TokenOf<K> | undefined {
     return this.consumeOrHandle(expect, () => this.report(diag))
+  }
+
+  // parsing ----------------
+
+  parseExpr(): Expr {
+    return this.parseExprBp(Precedence.LOWEST)
   }
 
   /**
