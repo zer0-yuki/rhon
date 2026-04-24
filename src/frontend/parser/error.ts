@@ -8,7 +8,7 @@ export type ParseDiagnostic =
   | NotAbindingDiagnostic
 
 export const ParseDiagnostic = {
-  unexpectedToken(expect: TokenKind, found: TokenKind): UnexpectedTokenDiagnostic {
+  unexpectedToken(expect: TokenKind[], found: TokenKind): UnexpectedTokenDiagnostic {
     return {
       kind: 'unexpected token',
       expect,
@@ -42,7 +42,7 @@ export interface BaseParseDiagnostic {}
 
 export interface UnexpectedTokenDiagnostic extends BaseParseDiagnostic {
   kind: 'unexpected token'
-  expect: TokenKind
+  expect: TokenKind[]
   found: TokenKind
 }
 
