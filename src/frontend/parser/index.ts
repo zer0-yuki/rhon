@@ -1,9 +1,10 @@
 import { Expr } from './expr.js'
 import { Lexer } from '../lexer/index.js'
-import { Token, TokenKind, TokenOf } from '../lexer/token.js'
+import { Token } from '../lexer/token.js'
 import { ParseDiagnostic } from './error.js'
 import { Precedence } from './precedence.js'
 import { getRule } from './rules.js'
+import { Supercombinator } from './super-combinator.js'
 
 export class Parser {
   private lexer: Lexer
@@ -33,66 +34,97 @@ export class Parser {
     return this.lexer.cur
   }
 
-  // checker ----------------
-
-  check<K extends TokenKind>(expect: K): TokenOf<K> | undefined {
-    const cur = this.peek()
-    if (Token.isEof(cur)) {
-      // make it a method ???
-      this.report(ParseDiagnostic.unexpectedToken(expect, 'eof'))
-      return undefined
-    }
-    return Token.isKind(cur, expect) ? cur : undefined
-  }
-
-  checkOrHandle<K extends TokenKind>(
-    expect: K,
-    handler: (cur: Token) => void
-  ): TokenOf<K> | undefined {
-    const cur = this.peek()
-    if (Token.isEof(cur)) {
-      this.report(ParseDiagnostic.unexpectedToken(expect, 'eof'))
-      return undefined
-    }
-    if (Token.isKind(cur, expect)) {
-      return cur
-    } else {
-      handler(cur)
-      return undefined
-    }
-  }
-
-  checkOrReport<K extends TokenKind>(expect: K, diag: ParseDiagnostic): TokenOf<K> | undefined {
-    return this.checkOrHandle(expect, () => this.report(diag))
-  }
-
-  // consumer ----------------
-
-  consumeOrHandle<K extends TokenKind>(
-    expect: K,
-    handler: (cur: Token) => void
-  ): TokenOf<K> | undefined {
-    const cur = this.peek()
-    if (Token.isEof(cur)) {
-      this.report(ParseDiagnostic.unexpectedToken(expect, 'eof'))
-      return undefined
-    }
-    if (Token.isKind(cur, expect)) {
-      return this.eat() as TokenOf<K>
-    } else {
-      handler(cur)
-      return undefined
-    }
-  }
-
-  /**
-   * Consume expected token kind produce an error.
-   */
-  consumeOrReport<K extends TokenKind>(expect: K, diag: ParseDiagnostic): TokenOf<K> | undefined {
-    return this.consumeOrHandle(expect, () => this.report(diag))
-  }
-
   // parsing ----------------
+
+  parse(): Supercombinator[] {
+    const scs: Supercombinator[] = []
+    while (this.peek().kind !== 'eof') {
+      const sc = this.parseSc()
+      if (sc !== undefined) {
+        scs.push(sc)
+      }
+    }
+    return scs
+  }
+
+  parseSc(): Supercombinator | undefined {
+    let isIdentFirst = true
+    let name: string
+    while (true) {
+      const cur = this.peek()
+      if (cur.kind === 'eof') {
+        // There will be no more tokens
+        this.report(ParseDiagnostic.notABinding())
+        this.eat()
+        return undefined
+      }
+      if (cur.kind === 'semicolon') {
+        // There is only a semicolon, can't be a binding
+        this.report(ParseDiagnostic.notABinding())
+        this.eat()
+        return undefined
+      }
+      if (cur.kind !== 'ident') {
+        // Can't be a beginning of sc,
+        // but we will report it out of the loop
+        isIdentFirst = false
+        this.eat()
+        continue
+      }
+      // Or it is exactly an ident
+      name = cur.name
+      this.eat()
+      break
+    }
+
+    if (!isIdentFirst) {
+      this.report(ParseDiagnostic.notABinding())
+    }
+
+    const args: string[] = []
+    while (true) {
+      const cur = this.peek()
+      if (cur.kind === 'eof') {
+        // There will be no more tokens,
+        // but we know its name
+        this.report(ParseDiagnostic.unexpectedToken(['ident', 'colon'], cur.kind))
+        this.eat()
+        return Supercombinator.from_name(name)
+      }
+      if (cur.kind === 'semicolon') {
+        // There is an unfinished binding,
+        // but we know its name
+        this.report(ParseDiagnostic.unexpectedToken(['ident', 'colon'], cur.kind))
+        this.eat()
+        return Supercombinator.from_name(name)
+      }
+      if (cur.kind === 'equal') {
+        // no more args are provided
+        this.eat()
+        break
+      }
+      if (cur.kind !== 'ident') {
+        this.report(ParseDiagnostic.unexpectedToken(['ident', 'colon'], cur.kind))
+        this.eat()
+        continue
+      }
+      args.push(cur.name)
+      this.eat()
+    }
+
+    const body = this.parseExpr()
+
+    const cur = this.eat()
+    if (cur.kind !== 'semicolon') {
+      this.report(ParseDiagnostic.unexpectedToken(['colon'], cur.kind))
+    }
+
+    return {
+      name,
+      args,
+      body,
+    }
+  }
 
   parseExpr(): Expr {
     return this.parseExprBp(Precedence.LOWEST)
@@ -109,9 +141,10 @@ export class Parser {
     let left: Expr
     if (!nud) {
       // In any time a token without nud can't be an expression
-      const error: ParseDiagnostic = Token.isKind(cur, 'rparen')
-        ? ParseDiagnostic.unclosedRparen()
-        : ParseDiagnostic.notAnExpression(cur.kind)
+      const error: ParseDiagnostic =
+        cur.kind === 'rparen'
+          ? ParseDiagnostic.unclosedRparen()
+          : ParseDiagnostic.notAnExpression(cur.kind)
       this.report(error)
       left = Expr.error()
     } else {

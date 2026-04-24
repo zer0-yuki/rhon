@@ -111,8 +111,10 @@ export const rules: {
   lparen: {
     nud: ({ p }) => {
       const expr = p.parseExprBp(Precedence.LOWEST)
-      p.consumeOrReport('rparen', ParseDiagnostic.unclosedLparen())
-      p.eat()
+      const cur = p.eat()
+      if (cur.kind !== 'rparen') {
+        p.report(ParseDiagnostic.unclosedLparen())
+      }
       return expr
     },
     binding: {
@@ -125,7 +127,8 @@ export const rules: {
   },
 
   equal: {},
-  colon: {
+  colon: {},
+  semicolon: {
     // It's a terminator
   },
   eof: {},
