@@ -1,7 +1,5 @@
-import { compile } from './backend/compiler.js'
 import { Lexer } from './frontend/lexer/index.js'
 import { Parser } from './frontend/parser/index.js'
-import { Executor } from './backend/executor.js'
 
 const src = `
 square x = x * x;
