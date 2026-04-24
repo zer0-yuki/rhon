@@ -86,6 +86,12 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
       case '=':
         yield Token.symbol('equal')
         break
+      case ':':
+        yield Token.symbol('colon')
+        break
+      case ';':
+        yield Token.symbol('semicolon')
+        break
 
       // EOF
       case '':

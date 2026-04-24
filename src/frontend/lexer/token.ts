@@ -27,7 +27,8 @@ const symbolMap = {
   lparen: '(',
   rparen: ')',
   equal: '=',
-  colon: ';',
+  colon: ':',
+  semicolon: ';',
 } as const
 type SymbolKind = keyof typeof symbolMap
 
@@ -74,6 +75,4 @@ export const Token = {
   eof: (): EOFToken => {
     return { kind: 'eof', lexeme: '' }
   },
-  isKind: <K extends TokenKind>(token: Token, kind: K): token is TokenOf<K> => token.kind === kind,
-  isEof: (token: Token) => Token.isKind(token, 'eof'),
 } as const
