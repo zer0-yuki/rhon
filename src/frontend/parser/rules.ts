@@ -1,4 +1,4 @@
-import { Expr, InfixKind, PrefixKind } from './expr.js'
+import { Expr, InfixOpKind, PrefixOpKind } from './expr.js'
 import { Token, TokenKind, TokenOf } from '../lexer/token.js'
 import { Parser } from './index.js'
 import { Precedence } from './precedence.js'
@@ -38,17 +38,17 @@ export type LedFn<K = string> = K extends TokenKind
   : // general type when K is not provided
     (ctx: { p: Parser; token: Token; left: Expr }) => Expr
 
-const makeNud = (kind: PrefixKind): NudFn => {
+const makeNud = (op: PrefixOpKind): NudFn => {
   return ({ p }) => {
     p.eat()
-    return Expr.prefix(kind, p.parseExprBp(Precedence.PREFIX))
+    return Expr.prefix(op, p.parseExprBp(Precedence.PREFIX))
   }
 }
 
-const makeLed = (kind: InfixKind, precedence: Precedence): LedFn => {
+const makeLed = (op: InfixOpKind, precedence: Precedence): LedFn => {
   return ({ p, left }) => {
     p.eat()
-    return Expr.infix(kind, left, p.parseExprBp(precedence))
+    return Expr.infix(op, left, p.parseExprBp(precedence))
   }
 }
 
