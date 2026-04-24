@@ -36,17 +36,28 @@ export class Parser {
   // checker ----------------
 
   check<K extends TokenKind>(expect: K): TokenOf<K> | undefined {
-    return Token.isKind(this.lexer.cur, expect) ? this.lexer.cur : undefined
+    const cur = this.peek()
+    if (Token.isEof(cur)) {
+      // make it a method ???
+      this.report(ParseDiagnostic.unexpectedToken(expect, 'eof'))
+      return undefined
+    }
+    return Token.isKind(cur, expect) ? cur : undefined
   }
 
   checkOrHandle<K extends TokenKind>(
     expect: K,
     handler: (cur: Token) => void
   ): TokenOf<K> | undefined {
-    if (Token.isKind(this.lexer.cur, expect)) {
-      return this.lexer.cur
+    const cur = this.peek()
+    if (Token.isEof(cur)) {
+      this.report(ParseDiagnostic.unexpectedToken(expect, 'eof'))
+      return undefined
+    }
+    if (Token.isKind(cur, expect)) {
+      return cur
     } else {
-      handler(this.lexer.cur)
+      handler(cur)
       return undefined
     }
   }
@@ -61,10 +72,15 @@ export class Parser {
     expect: K,
     handler: (cur: Token) => void
   ): TokenOf<K> | undefined {
-    if (Token.isKind(this.lexer.cur, expect)) {
+    const cur = this.peek()
+    if (Token.isEof(cur)) {
+      this.report(ParseDiagnostic.unexpectedToken(expect, 'eof'))
+      return undefined
+    }
+    if (Token.isKind(cur, expect)) {
       return this.eat() as TokenOf<K>
     } else {
-      handler(this.lexer.cur)
+      handler(cur)
       return undefined
     }
   }
