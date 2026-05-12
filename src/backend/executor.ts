@@ -9,7 +9,7 @@ interface Snapshot {
   insts: Instruction[]
 }
 
-export class Executer {
+export class Executor {
   private stack = new Stack<number>()
   private heap = new Heap<Node>()
   private globals = new Map<string, number>()

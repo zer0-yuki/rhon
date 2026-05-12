@@ -1,5 +1,5 @@
 import { compileSc } from './backend/compiler.js'
-import { Executer } from './backend/executor.js'
+import { Executor } from './backend/executor.js'
 import { Instruction } from './backend/instruction.js'
 import { Lexer } from './frontend/lexer/index.js'
 import { Parser } from './frontend/parser/index.js'
@@ -31,7 +31,7 @@ for (const scDef of scDefs) {
   console.log('-'.repeat(10))
 }
 
-const executer = new Executer(scDefs)
+const executer = new Executor(scDefs)
 const result = executer.execute()
 console.log(result)
 
