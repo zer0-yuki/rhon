@@ -8,7 +8,7 @@ const src = `
 square x = x * x;
 add x y = x + y;
 id x = x;
-main = id 5;
+main = square (add 3 4);
 `
 // (1 + 2) * 3 - 4
 console.log(src)
