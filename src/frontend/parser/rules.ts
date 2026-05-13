@@ -40,7 +40,6 @@ export type LedFn<K = string> = K extends TokenKind
 
 const makeNud = (op: PrefixOpKind): NudFn => {
   return ({ p }) => {
-    p.eat()
     return Expr.prefix(op, p.parseExprBp(Precedence.PREFIX))
   }
 }
