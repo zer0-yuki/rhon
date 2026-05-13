@@ -81,8 +81,9 @@ function compileToGraph(body: Expr, env: Map<string, number>): Instruction[] {
       return [...instArg, ...instFn, Instruction.mkApp()]
     }
     case 'error':
+      return internalError('cannot compile error expression')
     case 'unknown':
-      return internalError()
+      return internalError('cannot compile unknown expression')
     default:
       return unreachable()
   }
