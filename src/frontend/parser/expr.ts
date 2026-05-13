@@ -13,17 +13,19 @@ export interface VarExpr {
   readonly name: string
 }
 
-export type PrefixKind = 'pos' | 'neg'
+export type PrefixOpKind = 'pos' | 'neg'
 
 export interface PrefixExpr {
-  readonly kind: PrefixKind
+  readonly kind: 'prefix'
+  readonly op: PrefixOpKind
   readonly right: Expr
 }
 
-export type InfixKind = 'add' | 'sub' | 'mul' | 'div'
+export type InfixOpKind = 'add' | 'sub' | 'mul' | 'div'
 
 export interface InfixExpr {
-  readonly kind: InfixKind
+  readonly kind: 'infix'
+  readonly op: InfixOpKind
   readonly left: Expr
   readonly right: Expr
 }
@@ -59,11 +61,11 @@ export const Expr = {
   var: (name: string): VarExpr => {
     return { kind: 'var', name }
   },
-  prefix: (kind: PrefixKind, right: Expr): PrefixExpr => {
-    return { kind, right }
+  prefix: (op: PrefixOpKind, right: Expr): PrefixExpr => {
+    return { kind: 'prefix', op, right }
   },
-  infix: (kind: InfixKind, left: Expr, right: Expr): InfixExpr => {
-    return { kind, left, right }
+  infix: (op: InfixOpKind, left: Expr, right: Expr): InfixExpr => {
+    return { kind: 'infix', op, left, right }
   },
   app: (left: Expr, right: Expr): AppExpr => {
     return { kind: 'app', left, right }

@@ -1,12 +1,14 @@
-import { compile } from './backend/compiler.js'
+import { compileSc } from './backend/compiler.js'
+import { Executor } from './backend/executor.js'
+import { Instruction } from './backend/instruction.js'
 import { Lexer } from './frontend/lexer/index.js'
 import { Parser } from './frontend/parser/index.js'
-import { Executor } from './backend/executor.js'
 
 const src = `
 square x = x * x;
-add1 x = x + 1;
-main = square (add1 3);
+add x y = x + y;
+id x = x;
+main = square (add 3 4);
 `
 // (1 + 2) * 3 - 4
 console.log(src)
@@ -15,12 +17,22 @@ const l = new Lexer(src)
 const p = new Parser(l)
 const program = p.parse()
 
-console.log('Lexing diags:', l.diagnostics)
-console.log('Parsing diags:', p.diagnostics)
-console.dir(program)
+if (l.diagnostics.length !== 0 || p.diagnostics.length !== 0) {
+  console.log('Lexing diags:', l.diagnostics)
+  console.log('Parsing diags:', p.diagnostics)
+}
+// console.dir(program)
 
-// const insts = compile(program)
-// const executor = new Executor([...insts, { op: 'eval' }])
-// console.log(executor.run())
+const scDefs = program.map((sc) => compileSc(sc))
+for (const scDef of scDefs) {
+  console.log(`${scDef.name}:`)
+  console.log('-'.repeat(10))
+  console.log(Instruction.fmtInsts(scDef.insts))
+  console.log('-'.repeat(10))
+}
+
+const executer = new Executor(scDefs)
+const result = executer.execute()
+console.log(result)
 
 console.log('-'.repeat(20))

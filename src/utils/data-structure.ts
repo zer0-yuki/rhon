@@ -1,0 +1,54 @@
+import { internalError } from './utils.js'
+
+export class Stack<T> {
+  private stack: T[] = []
+
+  push(val: T): void {
+    this.stack.push(val)
+  }
+
+  pop(): T {
+    return this.stack.pop() ?? internalError('pop from empty stack')
+  }
+
+  peek(n: number): T {
+    return (
+      this.stack[this.stack.length - (1 + n)] ??
+      internalError(`peek out of bounds: ${n} out of ${this.stack.length}`)
+    )
+  }
+
+  clear(): void {
+    this.stack = []
+  }
+
+  clone(): Stack<T> {
+    const cloned = new Stack<T>()
+    cloned.stack = [...this.stack]
+    return cloned
+  }
+}
+
+export class Heap<T> {
+  private count = 0
+  private heap: Map<number, T> = new Map()
+
+  alloc(val: T): number {
+    const addr = this.count
+    this.count++
+    this.heap.set(addr, val)
+    return addr
+  }
+
+  visit(addr: number): T {
+    return this.heap.get(addr) ?? internalError(`invalid heap address: ${addr}`)
+  }
+
+  set(addr: number, val: T) {
+    this.heap.set(addr, val)
+  }
+
+  free(addr: number): void {
+    this.heap.delete(addr)
+  }
+}
