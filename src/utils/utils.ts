@@ -3,8 +3,8 @@ export function log<T>(item: T): T {
   return item
 }
 
-export function internalError(): never {
-  throw new Error('internal error')
+export function internalError(what?: string): never {
+  throw new Error(`Internal error${what ? `: ${what}` : ''}`)
 }
 
 export function unreachable(): never {

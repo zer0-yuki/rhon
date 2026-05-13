@@ -123,7 +123,7 @@ export class Executor {
     this.stack.push(addr)
   }
   private pushGlobal(name: string): void {
-    const addr = this.globals.get(name) ?? internalError()
+    const addr = this.globals.get(name) ?? internalError(`undefined global: ${name}`)
     this.stack.push(addr)
   }
   private pushArg(n: number): void {
