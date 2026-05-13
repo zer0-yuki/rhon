@@ -47,18 +47,26 @@ function compileToGraph(body: Expr, env: Map<string, number>): Instruction[] {
     }
     case 'prefix': {
       const instArg = compileToGraph(body.right, env)
-      return [...instArg, Instruction.pushGlobal('@' + body.op), Instruction.mkApp()]
+      if (body.op === 'pos') {
+        // If positive, simply do nothing
+        return instArg
+      }
+      return [
+        ...instArg,
+        Instruction.eval(), // Ensure evaluation before primitive operation
+        Instruction.prim('neg'),
+      ]
     }
     case 'infix': {
-      const instArg2 = compileToGraph(body.right, env)
-      const instArg1 = compileToGraph(body.left, offsetEnv(env))
-
+      // In functional languages we usually push args sequentially (ref arith2 implementation)
+      const instArgLeft = compileToGraph(body.left, env)
+      const instArgRight = compileToGraph(body.right, offsetEnv(env))
       return [
-        ...instArg2,
-        ...instArg1,
-        Instruction.pushGlobal('@' + body.op),
-        Instruction.mkApp(),
-        Instruction.mkApp(),
+        ...instArgLeft,
+        Instruction.eval(), // Ensure evaluation before primitive operation
+        ...instArgRight,
+        Instruction.eval(), // Ensure evaluation before primitive operation
+        Instruction.prim(body.op),
       ]
     }
     case 'app': {
@@ -66,6 +74,10 @@ function compileToGraph(body: Expr, env: Map<string, number>): Instruction[] {
       // Arg is already in the stack,
       // so we should offest env mapping values by 1
       const instFn = compileToGraph(body.left, offsetEnv(env))
+      // The order of instructions is important: first push arg, then push fn,
+      // because:
+      // - In runtime, when we encounter `mkApp` instruction,
+      //   we expect the stack to be [..., argAddr, fnAddr] and pop nodes.
       return [...instArg, ...instFn, Instruction.mkApp()]
     }
     case 'error':
