@@ -22,12 +22,15 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
   let currentPos = 0
   let startPos = 0
   let line = 1
+  let prevIsWhitespace = false
 
   // utils that capture local vars above
   const advance = () => src.at(currentPos++) ?? ''
   const peek = () => src.at(currentPos) ?? ''
   const skipWhitespace = () => {
+    prevIsWhitespace = false
     while (isWhitespace(peek())) {
+      prevIsWhitespace = true
       if (isLinebreak(advance())) {
         line++
       }
@@ -69,7 +72,15 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
         yield Token.symbol('plus')
         break
       case '-':
-        yield Token.symbol('minus')
+        if (isDigit(peek()) && prevIsWhitespace) {
+          // Negative literal: followed by digit and whitespace before '-'
+          while (isDigit(peek())) {
+            advance()
+          }
+          yield Token.number(makeLexeme())
+        } else {
+          yield Token.symbol('minus')
+        }
         break
       case '*':
         yield Token.symbol('star')
