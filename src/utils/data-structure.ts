@@ -14,6 +14,16 @@ export class Stack<T> {
   peek(n: number): T {
     return this.stack[this.stack.length - (1 + n)] ?? internalError()
   }
+
+  clear(): void {
+    this.stack = []
+  }
+
+  clone(): Stack<T> {
+    const cloned = new Stack<T>()
+    cloned.stack = [...this.stack]
+    return cloned
+  }
 }
 
 export class Heap<T> {

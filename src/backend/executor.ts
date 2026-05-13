@@ -59,8 +59,17 @@ export class Executor {
       case 'pushArg':
         this.pushArg(inst.n)
         break
+      case 'push':
+        this.push(inst.n)
+        break
       case 'mkApp':
         this.mkApp()
+        break
+      case 'eval':
+        this.eval()
+        break
+      case 'prim':
+        this.prim(inst.name)
         break
     }
     return true
@@ -79,6 +88,10 @@ export class Executor {
     this.insts = [...insts, ...this.insts]
   }
 
+  private putDump(stack: Stack<number>, insts: Instruction[]) {
+    this.dump.push({ stack, insts })
+  }
+
   private update(n: number): void {
     const addr = this.stack.pop()
     const redex = this.stack.peek(n)
@@ -94,9 +107,12 @@ export class Executor {
     const node = this.heap.visit(addr)
     switch (node.kind) {
       case 'number':
-        this.stack.push(addr)
-        break
       case 'string':
+        if (this.dump.length !== 0) {
+          const { stack, insts } = this.dump.pop() ?? internalError()
+          this.stack = stack
+          this.insts = insts
+        }
         this.stack.push(addr)
         break
       case 'app':
@@ -134,10 +150,62 @@ export class Executor {
     }
     this.stack.push(appNode.argAddr)
   }
+  private push(n: number): void {
+    const addr = this.stack.peek(n)
+    this.stack.push(addr)
+  }
   private mkApp(): void {
     const fnAddr = this.stack.pop()
     const argAddr = this.stack.pop()
     const appAddr = this.heap.alloc(Node.app(fnAddr, argAddr))
     this.stack.push(appAddr)
+  }
+  private eval(): void {
+    const addr = this.stack.pop()
+    this.putDump(this.stack.clone(), this.insts)
+    this.stack.clear()
+    this.stack.push(addr)
+    this.putInsts([Instruction.unwind()])
+  }
+  private prim(name: string): void {
+    switch (name) {
+      case 'neg':
+        this.negate()
+        break
+      case 'add':
+        this.arith2((a, b) => a + b)
+        break
+      case 'sub':
+        this.arith2((a, b) => a - b)
+        break
+      case 'mul':
+        this.arith2((a, b) => a * b)
+        break
+      case 'div':
+        this.arith2((a, b) => a / b)
+        break
+    }
+  }
+
+  private negate(): void {
+    const addr = this.stack.pop()
+    const node = this.heap.visit(addr)
+    if (node.kind !== 'number') {
+      return internalError()
+    }
+    const negAddr = this.heap.alloc(Node.number(-node.value))
+    this.stack.push(negAddr)
+  }
+
+  private arith2(op: (a: number, b: number) => number): void {
+    const addr2 = this.stack.pop()
+    const addr1 = this.stack.pop()
+    const node1 = this.heap.visit(addr1)
+    const node2 = this.heap.visit(addr2)
+    if (node1.kind !== 'number' || node2.kind !== 'number') {
+      return internalError()
+    }
+    const resAddr = this.heap.alloc(Node.number(op(node1.value, node2.value)))
+    this.stack.push(resAddr)
   }
 }
