@@ -109,7 +109,7 @@ export class Executor {
       case 'number':
       case 'string':
         if (this.dump.length !== 0) {
-          const { stack, insts } = this.dump.pop() ?? internalError()
+          const { stack, insts } = this.dump.pop() ?? internalError('empty dump')
           this.stack = stack
           this.insts = insts
         }
@@ -146,7 +146,7 @@ export class Executor {
     const appAddr = this.stack.peek(n + 1)
     const appNode = this.heap.visit(appAddr)
     if (appNode.kind !== 'app') {
-      return internalError()
+      return internalError('expected app node')
     }
     this.stack.push(appNode.argAddr)
   }
@@ -191,7 +191,7 @@ export class Executor {
     const addr = this.stack.pop()
     const node = this.heap.visit(addr)
     if (node.kind !== 'number') {
-      return internalError()
+      return internalError('expected number node')
     }
     const negAddr = this.heap.alloc(Node.number(-node.value))
     this.stack.push(negAddr)
@@ -203,7 +203,7 @@ export class Executor {
     const node1 = this.heap.visit(addr1)
     const node2 = this.heap.visit(addr2)
     if (node1.kind !== 'number' || node2.kind !== 'number') {
-      return internalError()
+      return internalError('expected number nodes')
     }
     const resAddr = this.heap.alloc(Node.number(op(node1.value, node2.value)))
     this.stack.push(resAddr)

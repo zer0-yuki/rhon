@@ -8,11 +8,14 @@ export class Stack<T> {
   }
 
   pop(): T {
-    return this.stack.pop() ?? internalError()
+    return this.stack.pop() ?? internalError('pop from empty stack')
   }
 
   peek(n: number): T {
-    return this.stack[this.stack.length - (1 + n)] ?? internalError()
+    return (
+      this.stack[this.stack.length - (1 + n)] ??
+      internalError(`peek out of bounds: ${n} out of ${this.stack.length}`)
+    )
   }
 
   clear(): void {
@@ -38,7 +41,7 @@ export class Heap<T> {
   }
 
   visit(addr: number): T {
-    return this.heap.get(addr) ?? internalError()
+    return this.heap.get(addr) ?? internalError(`invalid heap address: ${addr}`)
   }
 
   set(addr: number, val: T) {
