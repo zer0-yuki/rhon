@@ -1,4 +1,5 @@
 import { unreachable } from '../utils/utils.js'
+import { PrimitiveKind } from './primitives.js'
 
 export type Instruction =
   | { kind: 'update'; n: number }
@@ -8,7 +9,10 @@ export type Instruction =
   | { kind: 'pushStr'; str: string }
   | { kind: 'pushGlobal'; name: string }
   | { kind: 'pushArg'; n: number }
+  | { kind: 'push'; n: number }
   | { kind: 'mkApp' }
+  | { kind: 'eval' }
+  | { kind: 'prim'; name: PrimitiveKind }
 
 export const Instruction = {
   update(n: number): Instruction {
@@ -32,8 +36,17 @@ export const Instruction = {
   pushArg(n: number): Instruction {
     return { kind: 'pushArg', n }
   },
+  push(n: number): Instruction {
+    return { kind: 'push', n }
+  },
   mkApp(): Instruction {
     return { kind: 'mkApp' }
+  },
+  eval(): Instruction {
+    return { kind: 'eval' }
+  },
+  prim(name: PrimitiveKind): Instruction {
+    return { kind: 'prim', name }
   },
   fmt(inst: Instruction): string {
     switch (inst.kind) {
@@ -51,8 +64,14 @@ export const Instruction = {
         return `pushGlobal ${inst.name}`
       case 'pushArg':
         return `pushArg ${inst.n}`
+      case 'push':
+        return `push ${inst.n}`
       case 'mkApp':
         return `mkApp`
+      case 'eval':
+        return `eval`
+      case 'prim':
+        return `prim ${inst.name}`
       default:
         return unreachable()
     }
