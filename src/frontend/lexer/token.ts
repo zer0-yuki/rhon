@@ -19,7 +19,7 @@ export interface IdentToken {
   readonly name: string
 }
 
-export const symbolMap = {
+export const kindToChar = {
   plus: '+',
   minus: '-',
   star: '*',
@@ -30,12 +30,18 @@ export const symbolMap = {
   colon: ':',
   semicolon: ';',
 } as const
-type SymbolKind = keyof typeof symbolMap
+type SymbolKind = keyof typeof kindToChar
+
+/** Reverse mapping: lexeme -> SymbolKind */
+export const charToKind: { [lexeme: string]: SymbolKind } = {}
+for (const [kind, lexeme] of Object.entries(kindToChar)) {
+  charToKind[lexeme] = kind as SymbolKind
+}
 
 export type SymbolToken = {
   readonly [K in SymbolKind]: {
     readonly kind: K
-    readonly lexeme: (typeof symbolMap)[K]
+    readonly lexeme: (typeof kindToChar)[K]
   }
 }[SymbolKind]
 
@@ -69,7 +75,7 @@ export const Token = {
   symbol: <K extends SymbolKind>(kind: K): TokenOf<K> => {
     return {
       kind,
-      lexeme: symbolMap[kind],
+      lexeme: kindToChar[kind],
     } as TokenOf<K>
   },
   eof: (): EOFToken => {

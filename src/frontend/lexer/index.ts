@@ -1,5 +1,5 @@
 import { LexDiagnostic } from './error.js'
-import { Token } from './token.js'
+import { Token, charToKind } from './token.js'
 
 // utils
 const isDigit = (s: string) => /\d/.test(s)
@@ -89,36 +89,17 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
           yield Token.symbol('minus')
         }
         break
-      case '*':
-        yield Token.symbol('star')
-        break
-      case '/':
-        yield Token.symbol('slash')
-        break
-      case '(':
-        yield Token.symbol('lparen')
-        break
-      case ')':
-        yield Token.symbol('rparen')
-        break
-      case '=':
-        yield Token.symbol('equal')
-        break
-      case ':':
-        yield Token.symbol('colon')
-        break
-      case ';':
-        yield Token.symbol('semicolon')
-        break
-
       // EOF
       case '':
         // It is set to be the return value of the generator,
         // so no need to yield here.
         break
 
-      default:
-        if (isDigit(char)) {
+      default: {
+        const symbolKind = charToKind[char]
+        if (symbolKind !== undefined) {
+          yield Token.symbol(symbolKind)
+        } else if (isDigit(char)) {
           yield makeNumber()
         } else if (isIdentAlpha(char)) {
           yield makeIdent()
@@ -129,6 +110,7 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
         }
 
         break
+      }
     }
   }
 
