@@ -67,7 +67,6 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
     const char = advance()
 
     switch (char) {
-      /** {@link symbolMap} */
       case '+':
         if (isDigit(peek()) && prevIsWhitespace) {
           // Positive literal: followed by digit and whitespace before '+'
@@ -136,7 +135,7 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
   return Token.eof()
 }
 
-export class Lexer {
+export class Lexer implements Iterable<Token> {
   private generator: TokenGenerator
   private curTok: Token
   private nextTok: Token
@@ -145,15 +144,24 @@ export class Lexer {
   /** Make token stream from source. At first {@link cur} is pointing to the first token. */
   constructor(src: string) {
     this.generator = getRawTokens(src, (error) => this._diagnostics.push(error))
-    this.curTok = this.next()
-    this.nextTok = this.next()
+    this.curTok = this.fetchNext()
+    this.nextTok = this.fetchNext()
+  }
+
+  [Symbol.iterator]() {
+    return this
+  }
+
+  next(): IteratorResult<Token> {
+    const token = this.fetchNext()
+    return { value: token, done: token.kind === 'eof' }
   }
 
   get diagnostics() {
     return this._diagnostics
   }
 
-  private next(): Token {
+  private fetchNext(): Token {
     // this.generator.next().value can be undefined when it reaches the end
     return (this.generator.next().value as Token | undefined) ?? Token.eof()
   }
@@ -166,7 +174,7 @@ export class Lexer {
   advance(): Token {
     const res = this.cur
     this.curTok = this.nextTok
-    this.nextTok = this.next()
+    this.nextTok = this.fetchNext()
     return res
   }
 }
