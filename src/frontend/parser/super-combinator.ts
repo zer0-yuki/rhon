@@ -10,7 +10,7 @@ export const Supercombinator = {
   from(name: string, args: string[], body: Expr): Supercombinator {
     return { name, args, body }
   },
-  from_name(name: string): Supercombinator {
+  fromName(name: string): Supercombinator {
     return { name, args: [], body: Expr.error() }
   },
 }

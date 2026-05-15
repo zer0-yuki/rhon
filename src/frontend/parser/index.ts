@@ -89,14 +89,14 @@ export class Parser {
         // but we know its name
         this.report(ParseDiagnostic.unexpectedToken(['ident', 'colon'], cur.kind))
         this.eat()
-        return Supercombinator.from_name(name)
+        return Supercombinator.fromName(name)
       }
       if (cur.kind === 'semicolon') {
         // There is an unfinished binding,
         // but we know its name
         this.report(ParseDiagnostic.unexpectedToken(['ident', 'colon'], cur.kind))
         this.eat()
-        return Supercombinator.from_name(name)
+        return Supercombinator.fromName(name)
       }
       if (cur.kind === 'equal') {
         // no more args are provided
