@@ -70,10 +70,7 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
       case '+':
         if (isDigit(peek()) && prevIsWhitespace) {
           // Positive literal: followed by digit and whitespace before '+'
-          while (isDigit(peek())) {
-            advance()
-          }
-          yield Token.number(makeLexeme())
+          yield makeNumber()
         } else {
           yield Token.symbol('plus')
         }
@@ -81,10 +78,7 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
       case '-':
         if (isDigit(peek()) && prevIsWhitespace) {
           // Negative literal: followed by digit and whitespace before '-'
-          while (isDigit(peek())) {
-            advance()
-          }
-          yield Token.number(makeLexeme())
+          yield makeNumber()
         } else {
           yield Token.symbol('minus')
         }
