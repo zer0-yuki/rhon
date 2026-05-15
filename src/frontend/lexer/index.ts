@@ -68,16 +68,16 @@ function* getRawTokens(src: string, report: (diag: LexDiagnostic) => void): Toke
 
     switch (char) {
       case '+':
-        if (isDigit(peek()) && prevIsWhitespace) {
-          // Positive literal: followed by digit and whitespace before '+'
+        if (isDigit(peek()) && (prevIsWhitespace || startPos === 0)) {
+          // Positive literal: followed by digit; '+' is part of the number token
           yield makeNumber()
         } else {
           yield Token.symbol('plus')
         }
         break
       case '-':
-        if (isDigit(peek()) && prevIsWhitespace) {
-          // Negative literal: followed by digit and whitespace before '-'
+        if (isDigit(peek()) && (prevIsWhitespace || startPos === 0)) {
+          // Negative literal: followed by digit; '-' is part of the number token
           yield makeNumber()
         } else {
           yield Token.symbol('minus')
