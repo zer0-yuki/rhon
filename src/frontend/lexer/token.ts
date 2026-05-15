@@ -19,7 +19,7 @@ export interface IdentToken {
   readonly name: string
 }
 
-const symbolMap = {
+export const symbolMap = {
   plus: '+',
   minus: '-',
   star: '*',
