@@ -7,8 +7,7 @@ describe('Lexer', () => {
   describe('single operators', () => {
     for (const [char, kind] of Object.entries(charToKind)) {
       it(`lexes '${char}' as ${kind} token`, () => {
-        const lexer = new Lexer(char)
-        const tokens = [...lexer]
+        const tokens = [...new Lexer(char)]
         assert.deepStrictEqual(tokens, [Token.symbol(kind)])
       })
     }
