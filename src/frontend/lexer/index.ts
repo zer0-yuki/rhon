@@ -135,7 +135,10 @@ export class Lexer implements Iterable<Token> {
   }
 
   next(): IteratorResult<Token> {
-    const token = this.fetchNext()
+    const token = this.curTok
+    if (token.kind !== 'eof') {
+      this.advance()
+    }
     return { value: token, done: token.kind === 'eof' }
   }
 
